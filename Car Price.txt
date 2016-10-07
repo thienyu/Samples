@@ -1,0 +1,48 @@
+import flash.utils.Dictionary;
+
+var taxes:Dictionary = new Dictionary();
+taxes["europe"] = [{min:0, max:2, tax: 1}, {min:2, max:5, tax: 1.2}, {min:5, max:100, tax: 2}];
+taxes["usa"] = [{min:0, max:2, tax: 0.75}, {min:2, max:5, tax: 0.9}, {min:5, max:100, tax: 1.5}];
+taxes["japan"] = [{min:0, max:2, tax: 0.7}, {min:2, max:5, tax: 0.8}, {min:5, max:100, tax: 1.35}];
+
+function findPrice(model:String, country:String, capacity: Number, price:Number):String {
+	var tax:Number;
+	
+	for each (var c in taxes[country]) {
+		if (checkCapacity(capacity, c.min, c.max)) {
+			tax = c.tax; 
+			break;
+		}
+	}
+	
+	if (tax) {
+		var originalPrice:Number = price * 47;
+		var importTax:Number = originalPrice * tax;
+		var vat:Number = (originalPrice + importTax) * 0.12;
+		var sellingPrice:Number = originalPrice + importTax + vat;
+		return model + " : PHP " + sellingPrice.toString();
+	}
+	
+	return model + " not available in this country!";
+	
+}
+
+function checkCapacity(value:Number, min:Number , max:Number):Boolean{
+    return min > value ? false : ( max < value ? false : true );
+}
+
+trace(findPrice("Benz G65", "europe", 6, 217900));
+trace(findPrice("Honda Jazz", "japan", 1.5, 19490 ));
+trace(findPrice("Jeep wrangler", "usa", 3.6, 36995));
+trace(findPrice("Chery QQ", "china", 1, 6000));
+
+
+
+/* Result Output
+
+Benz G65 : PHP 34410768
+Honda Jazz : PHP 1744121.12
+Jeep wrangler : PHP 3700091.92
+Chery QQ not available in this country!
+
+*/
